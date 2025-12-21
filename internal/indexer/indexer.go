@@ -2,6 +2,8 @@ package indexer
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"sync"
 
 	"github.com/0xADE/ade-ctld/internal/config"
@@ -11,12 +13,13 @@ import (
 
 // Indexer coordinates indexing of executables and desktop files
 type Indexer struct {
-	index      *Index
-	running    bool
-	mu         sync.RWMutex
-	indexCtx   context.Context
+	index       *Index
+	running     bool
+	mu          sync.RWMutex
+	indexCtx    context.Context
 	indexCancel context.CancelFunc
-	indexWg    sync.WaitGroup
+	indexWg     sync.WaitGroup
+	watcher     *Watcher
 }
 
 // NewIndexer creates a new indexer instance
@@ -30,7 +33,35 @@ func NewIndexer() *Indexer {
 func (idx *Indexer) Start(ctx context.Context) error {
 	cfg := config.Get()
 	paths := cfg.Path()
-	return idx.runIndexing(ctx, paths)
+	if err := idx.runIndexing(ctx, paths); err != nil {
+		return err
+	}
+
+	// Start watching directories for changes
+	return idx.startWatcher(ctx, paths)
+}
+
+// startWatcher initializes and starts the directory watcher
+func (idx *Indexer) startWatcher(ctx context.Context, execPaths []string) error {
+	// Create watcher with reindex callback
+	watcher, err := NewWatcher(func(ctx context.Context) error {
+		_, err := idx.Reindex(ctx, nil)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+
+	idx.mu.Lock()
+	idx.watcher = watcher
+	idx.mu.Unlock()
+
+	// Combine executable paths with desktop paths
+	allPaths := make([]string, 0, len(execPaths)+3)
+	allPaths = append(allPaths, execPaths...)
+	allPaths = append(allPaths, desktop.GetDesktopPaths()...)
+
+	return watcher.Start(ctx, allPaths)
 }
 
 // Reindex reindexes executables in the provided paths, or all registered paths if none provided
@@ -178,13 +209,23 @@ func (idx *Indexer) IsRunning() bool {
 	return idx.running
 }
 
-// Stop stops the indexing process
+// Stop stops the indexing process and directory watcher
 func (idx *Indexer) Stop() {
 	idx.mu.Lock()
-	defer idx.mu.Unlock()
 	if idx.running && idx.indexCancel != nil {
 		idx.indexCancel()
 	}
 	idx.running = false
+	watcher := idx.watcher
+	idx.mu.Unlock()
+
 	idx.indexWg.Wait()
+
+	// Stop watcher if running
+	if watcher != nil {
+		if err := watcher.Stop(); err != nil {
+			// Log but don't fail
+			fmt.Fprintf(os.Stderr, "Indexer: failed to stop watcher: %v\n", err)
+		}
+	}
 }

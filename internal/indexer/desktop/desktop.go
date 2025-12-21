@@ -18,16 +18,20 @@ type DesktopEntry struct {
 	Path       string            // Path to .desktop file
 }
 
-// ScanDesktopFiles scans for .desktop files in standard locations
-func ScanDesktopFiles(resultChan chan<- *DesktopEntry) error {
-	defer close(resultChan)
-
-	// Standard desktop file locations
-	paths := []string{
+// GetDesktopPaths returns the standard desktop file locations
+func GetDesktopPaths() []string {
+	return []string{
 		"/usr/share/applications",
 		"/usr/local/share/applications",
 		filepath.Join(os.Getenv("HOME"), ".local/share/applications"),
 	}
+}
+
+// ScanDesktopFiles scans for .desktop files in standard locations
+func ScanDesktopFiles(resultChan chan<- *DesktopEntry) error {
+	defer close(resultChan)
+
+	paths := GetDesktopPaths()
 
 	for _, path := range paths {
 		if err := scanDesktopPath(path, resultChan); err != nil {
