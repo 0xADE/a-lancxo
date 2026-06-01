@@ -7,7 +7,7 @@
 # Go Makefile
 
 # Variables
-APP=ade-ctld
+APP=ade-lanĉo
 BINDIR=build
 PREFIX?=/usr/local/bin
 
@@ -47,6 +47,10 @@ run-race: tidy
 .PHONY: lint
 lint:
 	go tool golangci-lint run ./...
+
+.PHONY: fix-lint
+fix-lint:
+	go tool golangci-lint run --fix ./...
 
 .PHONY: tidy
 tidy:

@@ -33,6 +33,7 @@ type (
 		UnixSocket string `envconfig:"ADE_INDEXD_SOCK"`
 		Workers    int    `envconfig:"ADE_INDEXD_WORKERS" default:"4"`
 		ListLimit  int    `envconfig:"ADE_INDEXD_LIST_LIMIT" default:"128"`
+		LogPath    string `envconfig:"ADE_CTLD_LOG"`
 	}
 	rc struct {
 		sync.RWMutex
@@ -67,6 +68,10 @@ func Init() error {
 				return
 			}
 			globalConfig.static.UnixSocket = strings.Replace(globalConfig.static.UnixSocket, "~", home, 1)
+		}
+
+		if globalConfig.static.LogPath != "" {
+			globalConfig.static.LogPath = expandPath(globalConfig.static.LogPath)
 		}
 
 		// Load rc file
@@ -234,6 +239,11 @@ func (c *config) ListLimit() int {
 		return 128 // Default
 	}
 	return c.static.ListLimit
+}
+
+// LogPath returns the path for duplicate process logging (stdout/stderr), or empty if disabled.
+func (c *config) LogPath() string {
+	return c.static.LogPath
 }
 
 func expandPath(path string) string {

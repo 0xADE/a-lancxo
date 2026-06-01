@@ -66,6 +66,7 @@ flowchart TB
 | `ADE_INDEXD_SOCK`       | Путь к Unix-сокету                       | /tmp/ade-{UID}/indexd |
 | `ADE_INDEXD_WORKERS`    | Количество воркеров индексации           | 4                     |
 | `ADE_INDEXD_LIST_LIMIT` | Лимит записей в ответе list              | 128                   |
+| `ADE_CTLD_LOG`          | Путь к файлу: дублировать stdout/stderr  | (выкл.)               |
 
 **RC-файл:** `~/.config/ade/indexd.rc`
 

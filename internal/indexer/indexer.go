@@ -6,9 +6,9 @@ import (
 	"os"
 	"sync"
 
-	"github.com/0xADE/ade-ctld/internal/config"
-	"github.com/0xADE/ade-ctld/internal/indexer/desktop"
-	"github.com/0xADE/ade-ctld/internal/indexer/executable"
+	"github.com/0xADE/a-lancxo/internal/config"
+	"github.com/0xADE/a-lancxo/internal/indexer/desktop"
+	"github.com/0xADE/a-lancxo/internal/indexer/executable"
 )
 
 // Indexer coordinates indexing of executables and desktop files

@@ -14,10 +14,10 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/0xADE/ade-ctld/internal/config"
-	"github.com/0xADE/ade-ctld/internal/indexer"
-	"github.com/0xADE/ade-ctld/internal/runindex"
-	"github.com/0xADE/ade-ctld/parser"
+	"github.com/0xADE/a-lancxo/internal/config"
+	"github.com/0xADE/a-lancxo/internal/indexer"
+	"github.com/0xADE/a-lancxo/internal/runindex"
+	"github.com/0xADE/a-lancxo/parser"
 )
 
 const (

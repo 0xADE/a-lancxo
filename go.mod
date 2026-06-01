@@ -1,8 +1,6 @@
-module github.com/0xADE/ade-ctld
+module github.com/0xADE/a-lancxo
 
-go 1.25.3
-
-replace github.com/0xADE/ade-ctld => ./
+go 1.26.3
 
 require (
 	github.com/fsnotify/fsnotify v1.9.0

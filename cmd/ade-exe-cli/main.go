@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/0xADE/ade-ctld/client/exe"
+	"github.com/0xADE/a-lancxo/client/exe"
 )
 
 func main() {

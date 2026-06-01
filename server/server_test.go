@@ -5,8 +5,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/0xADE/ade-ctld/internal/indexer"
-	"github.com/0xADE/ade-ctld/parser"
+	"github.com/0xADE/a-lancxo/internal/indexer"
+	"github.com/0xADE/a-lancxo/parser"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -264,4 +264,3 @@ func (m *mockConn) SetReadDeadline(t time.Time) error {
 func (m *mockConn) SetWriteDeadline(t time.Time) error {
 	return nil
 }
-

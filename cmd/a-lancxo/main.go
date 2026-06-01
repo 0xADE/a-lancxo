@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"sort"
 	"syscall"
 
-	"github.com/0xADE/ade-ctld/internal/config"
-	"github.com/0xADE/ade-ctld/internal/indexer"
-	"github.com/0xADE/ade-ctld/server"
+	"github.com/0xADE/a-lancxo/internal/config"
+	"github.com/0xADE/a-lancxo/internal/indexer"
+	"github.com/0xADE/a-lancxo/internal/logdup"
+	"github.com/0xADE/a-lancxo/server"
 )
 
 func main() {
@@ -18,6 +20,17 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Failed to initialize config: %v\n", err)
 		os.Exit(1)
 	}
+
+	if p := config.Get().LogPath(); p != "" {
+		cleanupLog, err := logdup.Setup(p)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to set up log file %s: %v\n", p, err)
+			os.Exit(1)
+		}
+		defer cleanupLog()
+	}
+
+	writeStartupEnv()
 
 	// Start config watcher
 	if err := config.Run(); err != nil {
@@ -73,4 +86,13 @@ func main() {
 	}
 
 	fmt.Println("ade-exe-ctld stopped")
+}
+
+func writeStartupEnv() {
+	env := os.Environ()
+	sort.Strings(env)
+	fmt.Fprintf(os.Stderr, "ade-exe-ctld startup: environment (%d variables)\n", len(env))
+	for _, line := range env {
+		fmt.Fprintf(os.Stderr, "  %s\n", line)
+	}
 }
