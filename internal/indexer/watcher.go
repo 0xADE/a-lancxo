@@ -21,15 +21,15 @@ type ReindexCallback func(ctx context.Context) error
 
 // Watcher monitors directories for file changes and triggers reindexing
 type Watcher struct {
-	watcher   *fsnotify.Watcher
-	callback  ReindexCallback
-	ctx       context.Context
-	cancel    context.CancelFunc
-	wg        sync.WaitGroup
-	mu        sync.Mutex
-	debounce  *time.Timer
-	pending   bool
-	paths     []string // tracked directories
+	watcher  *fsnotify.Watcher
+	callback ReindexCallback
+	ctx      context.Context
+	cancel   context.CancelFunc
+	wg       sync.WaitGroup
+	mu       sync.Mutex
+	debounce *time.Timer
+	pending  bool
+	paths    []string // tracked directories
 }
 
 // NewWatcher creates a new directory watcher
@@ -187,4 +187,3 @@ func (w *Watcher) GetWatchedPaths() []string {
 	defer w.mu.Unlock()
 	return w.paths
 }
-

@@ -68,7 +68,7 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-	fmt.Println("ade-exe-ctld started")
+	fmt.Println("a-lancxo started")
 
 	select {
 	case sig := <-sigChan:
@@ -85,13 +85,13 @@ func main() {
 		}
 	}
 
-	fmt.Println("ade-exe-ctld stopped")
+	fmt.Println("a-lancxo stopped")
 }
 
 func writeStartupEnv() {
 	env := os.Environ()
 	sort.Strings(env)
-	fmt.Fprintf(os.Stderr, "ade-exe-ctld startup: environment (%d variables)\n", len(env))
+	fmt.Fprintf(os.Stderr, "a-lancxo startup: environment (%d variables)\n", len(env))
 	for _, line := range env {
 		fmt.Fprintf(os.Stderr, "  %s\n", line)
 	}

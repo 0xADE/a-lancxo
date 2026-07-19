@@ -73,6 +73,7 @@ func scanDesktopPath(rootPath string, resultChan chan<- *DesktopEntry) error {
 
 // ParseDesktopFile parses a single .desktop file
 func ParseDesktopFile(path string) (*DesktopEntry, error) {
+	//nolint:gosec // G304: path comes from desktop dir walk for indexer
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -238,6 +239,7 @@ func removeFieldCodes(s string) string {
 
 // IsNoDisplay checks if the entry should be hidden (requires parsing NoDisplay key)
 func IsNoDisplay(path string) bool {
+	//nolint:gosec // G304: path comes from desktop dir walk for indexer
 	file, err := os.Open(path)
 	if err != nil {
 		return false

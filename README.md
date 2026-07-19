@@ -1,35 +1,28 @@
-# ADE: ctld
+# a-lancxo
 
-Управление запускаем приложений, открытием файлов и управлением окнами через WM.
-Демоны составляют индекс приложений в PATH, а также доступных пользователю документов и открытых окон.
+Application indexer and launcher daemon for ADE. Replaces the former **ade-exe-ctld** binary.
+
+Indexes executables from PATH and `.desktop` files, exposes a Unix-socket CMDLIST API for clients such as **xopen**.
 
 ## Status
 
 **In active development and not suitable for use by end users!**
 
-## Daemons list
+## Binaries
 
-- ade-exe-ctld - запуск приложений
-- ade-file-ctld - открытие и управление файлами
-- ade-wm-ctld - управление окнами WM
-- ade-roam-ctld - работа с базой OrgRoam (открытие документов базы через Emacs)
+| Command | Role |
+|---------|------|
+| **a-lancxo** | Main daemon (application index + launch) |
+| **ade-exe-cli** | CLI client for testing |
 
-Демоны ctld обеспечивают только бекенд, работая в сессии WM с правами пользователя. Запуск их из WM позволит стартовать из них же другие графические приложения.
+## Socket
 
-Демоны общаются через unix sockets (STREAM). К ним можно обращаться зная адрес сокета. См. internal/config.
+Default: `/tmp/ade-{UID}/indexd` (`ADE_INDEXD_SOCK`).
 
-Для `ade-exe-ctld` опционально: переменная `ADE_CTLD_LOG` — путь к файлу, куда дублируется вывод процесса (stdout и stderr), см. `doc/architecture.md`.
+## Build
 
-## План работ
-1. Сначала реализуется только ade-exe-ctld для проверки концепта, остальные демоны позже.
-2. Реализуется индексатор в N горутин (задаем по конфигу), который собирает в поисковый индекс исполняемые файлы из PATH, доступные юзеру
-   - воркер индексатора обходит рекурсивно директории, начиная с указанной, выявляет файлы доступные для запуска
-   - также индексируются файлы .desktop, содержащие инструкции для запуска приложений с метаданными по ["Desktop Entry Specification"](https://specifications.freedesktop.org/desktop-entry/latest/)
-     - для ключей Terminal запуск только через терминал (из ADE_DEFAULT_TERM или по переменной TERM)
-     - индекс по локализациям имени нужен
-     - Categories добавляются в индекс категорий, по которым можно устанавливать фильтр
-3. Надо реализовать командный язык в стиле Forth с парсером (см. doc/cmdlist-protocol.md)
-4. Реализуется пока только текстовый формат команд (см. TXT/BIN в заголовке), бинарный формат к проработке позже. Пакет parser.
-5. Реализуется листенер с сокетом, для приема команд (пакет server). И их хендлинг после прохождения через парсер, а также возврат результатов в ответ на команды.
-6. Тестовый клиент в виде cli на go, для тестов вместо реализации полноценного gui xopen.
-
+```bash
+make build
+make test
+make install   # installs a-lancxo
+```

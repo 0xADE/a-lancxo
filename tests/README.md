@@ -1,11 +1,11 @@
 # Integration Tests
 
-This directory contains integration tests for `ade-ctld`.
+This directory contains integration tests for a-lancxo.
 
 ## Prerequisites
 
 - Python 3
-- `ade-exe-ctld` binary built (run `make build` in parent directory)
+- `a-lancxo` binary built (run `make build` in parent directory)
 
 ## Running Tests
 
@@ -20,4 +20,3 @@ Or manually:
 ```bash
 python3 tests/integration_test.py
 ```
-

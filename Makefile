@@ -1,5 +1,5 @@
 ##
-# ade-ctld
+# a-lancxo
 #
 # @file
 # @version 0.1
@@ -7,7 +7,7 @@
 # Go Makefile
 
 # Variables
-APP=ade-lanĉo
+APP=a-lancxo
 BINDIR=build
 PREFIX?=/usr/local/bin
 
@@ -21,12 +21,15 @@ VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "v0.
 COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 FLAGS := -buildvcs=false -ldflags "-X main.version=$(VERSION) -X main.gitCommit=$(COMMIT)"
 
+# Active commands (deprecated stubs are excluded from default build).
+ACTIVE_CMDS := cmd/a-lancxo cmd/ade-exe-cli
+
 .PHONY: all
 all: build
 
 .PHONY: build
 build:
-	$(foreach dir,$(wildcard cmd/*), echo "$(dir) building..."; go build $(FLAGS) -o $(BINDIR)/ ./$(dir);)
+	$(foreach dir,$(ACTIVE_CMDS), echo "$(dir) building..."; go build $(FLAGS) -o $(BINDIR)/ ./$(dir);)
 
 .PHONY: test
 test:
@@ -38,7 +41,7 @@ test-integration: build
 
 .PHONY: run
 run: build
-	./$(BINDIR)/ade-exe-ctld
+	./$(BINDIR)/$(APP)
 
 .PHONY: run-race
 run-race: tidy
@@ -61,7 +64,7 @@ tidy:
 install: build
 	@echo "Don't forget to set SUDO=sudo (or SUDO=doas) before this command!"
 	@echo "for example: SUDO=doas make install"
-	$(SUDO) install ./build/ade-exe-ctld $(PREFIX)
+	$(SUDO) install ./build/$(APP) $(PREFIX)
 
 .PHONY: sloc
 sloc:

@@ -29,6 +29,7 @@ func Setup(path string) (cleanup func(), err error) {
 		return nil, fmt.Errorf("logdup: mkdir: %w", err)
 	}
 
+	//nolint:gosec // G304: path is operator-controlled ADE_CTLD_LOG
 	logFile, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0640)
 	if err != nil {
 		return nil, fmt.Errorf("logdup: open log: %w", err)

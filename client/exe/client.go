@@ -2,6 +2,7 @@ package exe
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -25,7 +26,10 @@ type Client struct {
 	socket string
 }
 
-const protoVer = "TXT01" // cmdlist protocol, text format, v01
+const (
+	protoVer   = "TXT01" // cmdlist protocol, text format, v01
+	bodyMarker = "body:"
+)
 
 // NewClient creates a new client and connects to the server
 func NewClient() (*Client, error) {
@@ -34,7 +38,7 @@ func NewClient() (*Client, error) {
 		return nil, fmt.Errorf("failed to get socket path: %w", err)
 	}
 
-	conn, err := net.Dial("unix", socketPath)
+	conn, err := (&net.Dialer{}).DialContext(context.Background(), "unix", socketPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to socket %s: %w", socketPath, err)
 	}
@@ -161,7 +165,6 @@ func ReadResponse(conn net.Conn) {
 	// Read attrs block and check for body: header
 	attrs := strings.Builder{}
 	body := strings.Builder{}
-	hasBody := false
 	seenBodyHeader := false
 
 	for {
@@ -175,7 +178,7 @@ func ReadResponse(conn net.Conn) {
 		}
 
 		// Check if this is the body: header
-		if strings.TrimSpace(line) == "body:" {
+		if strings.TrimSpace(line) == bodyMarker {
 			seenBodyHeader = true
 			// Continue to read body content (don't add body: to attrs or body)
 			continue
@@ -213,16 +216,10 @@ func ReadResponse(conn net.Conn) {
 		}
 	}
 
-	// Build full response for logging
-	fullResponse := attrs.String()
-	if hasBody {
-		fullResponse += "body:\n" + body.String()
-	}
-
 	// Print response to stdout
 	fmt.Print(attrs.String())
-	if hasBody {
-		fmt.Print("body:\n")
+	if seenBodyHeader {
+		fmt.Print(bodyMarker + "\n")
 		fmt.Print(body.String())
 	}
 }
@@ -238,12 +235,12 @@ func isEndOfResponse(reader *bufio.Reader) bool {
 	return false
 }
 
-// isBlankLineBeforeBodyHeader checks if this blank line is followed by a "body:" header
+// isBlankLineBeforeBodyHeader checks if this blank line is followed by a body: header
 func isBlankLineBeforeBodyHeader(reader *bufio.Reader) bool {
-	peekBytes, peekErr := reader.Peek(6) // "body:" + "\n" = 6 bytes
-	if peekErr == nil && len(peekBytes) >= 5 {
-		peekLine := string(peekBytes[:5])
-		if peekLine == "body:" {
+	peekBytes, peekErr := reader.Peek(len(bodyMarker) + 1) // bodyMarker + "\n"
+	if peekErr == nil && len(peekBytes) >= len(bodyMarker) {
+		peekLine := string(peekBytes[:len(bodyMarker)])
+		if peekLine == bodyMarker {
 			return true
 		}
 	}
@@ -296,7 +293,6 @@ func (c *Client) SetFilterName(query string) error {
 	}
 
 	return nil
-
 }
 
 // List retrieves the list of applications matching current filters
@@ -321,9 +317,9 @@ func (c *Client) List() ([]Application, error) {
 	}
 
 	// Parse body
-	var apps []Application
-	lines := strings.SplitSeq(strings.TrimSpace(body), "\n")
-	for line := range lines {
+	lines := strings.Split(strings.TrimSpace(body), "\n")
+	apps := make([]Application, 0, len(lines))
+	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
@@ -420,7 +416,7 @@ func (c *Client) readResponse() (map[string]string, string, error) {
 		}
 
 		// Check if this is the body: header
-		if strings.TrimSpace(line) == "body:" {
+		if strings.TrimSpace(line) == bodyMarker {
 			seenBodyHeader = true
 			// Continue to read body content (don't add body: to attrs or body)
 			continue

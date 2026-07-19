@@ -117,10 +117,12 @@ func (c *config) loadRC() error {
 	}
 
 	// Try to read rc file
+	//nolint:gosec // G304: path is fixed operator config at ~/.config/ade/indexd.rc
 	file, err := os.Open(rcPath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			// Create empty file
+			//nolint:gosec // G304: path is fixed operator config at ~/.config/ade/indexd.rc
 			file, err = os.Create(rcPath)
 			if err != nil {
 				return err

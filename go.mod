@@ -5,6 +5,9 @@ go 1.26.3
 require (
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/onsi/ginkgo/v2 v2.27.2
+	github.com/onsi/gomega v1.38.2
+	go.etcd.io/bbolt v1.4.3
 )
 
 require (
@@ -67,6 +70,7 @@ require (
 	github.com/fzipp/gocyclo v0.6.0 // indirect
 	github.com/ghostiam/protogetter v0.3.17 // indirect
 	github.com/go-critic/go-critic v0.14.0 // indirect
+	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/go-toolsmith/astcast v1.1.0 // indirect
 	github.com/go-toolsmith/astcopy v1.1.0 // indirect
@@ -142,7 +146,6 @@ require (
 	github.com/nishanths/exhaustive v0.12.0 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nunnatsa/ginkgolinter v0.21.2 // indirect
-	github.com/onsi/ginkgo/v2 v2.27.2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -200,12 +203,13 @@ require (
 	go-simpler.org/sloglint v0.11.1 // indirect
 	go.augendre.info/arangolint v0.3.1 // indirect
 	go.augendre.info/fatcontext v0.9.0 // indirect
-	go.etcd.io/bbolt v1.4.3 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20251002181428-27f1f14c8bb9 // indirect
 	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/net v0.46.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/telemetry v0.0.0-20251008203120-078029d740a8 // indirect

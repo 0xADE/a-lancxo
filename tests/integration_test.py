@@ -58,7 +58,7 @@ Categories=Utility;Test;
 
         # Build the server first (assuming 'make build' was run or binary exists)
         server_bin = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../build/ade-exe-ctld")
+            os.path.join(os.path.dirname(__file__), "../build/a-lancxo")
         )
         if not os.path.exists(server_bin):
             raise RuntimeError(

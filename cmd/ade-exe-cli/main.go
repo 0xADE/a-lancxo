@@ -1,3 +1,4 @@
+// Deprecated version. Use a-lancxo instead.
 package main
 
 import (

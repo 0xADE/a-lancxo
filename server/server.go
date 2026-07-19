@@ -65,7 +65,7 @@ func NewServer(idx *indexer.Indexer) (*Server, error) {
 	// Remove existing socket if it exists
 	os.Remove(socketPath)
 
-	listener, err := net.Listen("unix", socketPath)
+	listener, err := (&net.ListenConfig{}).Listen(context.Background(), "unix", socketPath)
 	if err != nil {
 		return nil, err
 	}
@@ -480,10 +480,12 @@ func (s *Server) handleRun(conn net.Conn, cmd *parser.Command) {
 	if forceTerminal || entry.Terminal {
 		cfg := config.Get()
 		term := cfg.Terminal()
-		execCmd = exec.Command(term, "--hold", "-e", entry.Exec)
+		//nolint:gosec // G204: launcher intentionally runs desktop Exec in terminal
+		execCmd = exec.CommandContext(context.Background(), term, "--hold", "-e", entry.Exec)
 		log.Printf("[DEBUG] Executing in terminal: %s -e %s", term, entry.Exec)
 	} else {
-		execCmd = exec.Command(entry.Exec)
+		//nolint:gosec // G204: launcher intentionally runs desktop Exec
+		execCmd = exec.CommandContext(context.Background(), entry.Exec)
 		log.Printf("[DEBUG] Executing: %v", entry.Exec)
 	}
 
@@ -531,7 +533,7 @@ func (s *Server) handleReindex(conn net.Conn, cmd *parser.Command) {
 	log.Printf("[DEBUG] Handling reindex command")
 
 	// Collect string arguments as paths
-	var paths []string
+	paths := make([]string, 0, len(cmd.Args))
 	for _, arg := range cmd.Args {
 		if arg.Type != parser.TypeString {
 			log.Printf("[ERROR] reindex command received non-string argument")
