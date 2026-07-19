@@ -13,7 +13,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-const idxrc = "~/.config/ade/indexd.rc"
+const defaultIdxrcRel = "indexd.rc"
 
 var (
 	globalConfig *config
@@ -107,8 +107,15 @@ func Get() *config {
 	return globalConfig
 }
 
+func idxrcPath() string {
+	if configHome := os.Getenv("ADE_CONFIG_HOME"); configHome != "" {
+		return expandPath(filepath.Join(configHome, defaultIdxrcRel))
+	}
+	return expandPath(filepath.Join("~/.config/ade", defaultIdxrcRel))
+}
+
 func (c *config) loadRC() error {
-	rcPath := expandPath(idxrc)
+	rcPath := idxrcPath()
 
 	// Create directory if it doesn't exist
 	rcDir := filepath.Dir(rcPath)
@@ -159,7 +166,7 @@ func (c *config) setupWatcher() error {
 	}
 
 	c.watcher = watcher
-	rcPath := expandPath(idxrc)
+	rcPath := idxrcPath()
 	rcDir := filepath.Dir(rcPath)
 
 	// Watch the directory
@@ -177,7 +184,7 @@ func (c *config) watchLoop() {
 			if !ok {
 				return
 			}
-			rcPath := expandPath(idxrc)
+			rcPath := idxrcPath()
 			if event.Name == rcPath && (event.Op&fsnotify.Write == fsnotify.Write || event.Op&fsnotify.Create == fsnotify.Create) {
 				if err := c.loadRC(); err != nil {
 					// Log error but continue
